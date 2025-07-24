@@ -1,8 +1,8 @@
 const cornerCoords = {
-    nw: [-22.01459, -47.43843],  // Noroeste (superior esquerda)
-    ne: [-22.01459, -47.42704],  // Nordeste (superior direita)
-    se: [-22.02573, -47.42704],  // Sudeste (inferior direita)
-    sw: [-22.02573, -47.43843]   // Sudoeste (inferior esquerda)
+    nw: [-22.01459, -47.43843],
+    ne: [-22.01459, -47.42704],
+    se: [-22.02573, -47.42704],
+    sw: [-22.02573, -47.43843]
 };
 
 function initMap() {
@@ -19,22 +19,22 @@ function initMap() {
         maxBoundsViscosity: 1.0
     });
 
-    // Camada base do mapa
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Camada do mapa base
+    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap',
         opacity: 0.8
     }).addTo(map);
 
-    // 🖼️ Sobreposição da imagem
-    L.imageOverlay('mapa-orientacao.png', [
-        [cornerCoords.sw[0], cornerCoords.sw[1]],  // Sudoeste
-        [cornerCoords.ne[0], cornerCoords.ne[1]]   // Nordeste
+    // Camada da imagem sobreposta
+    const imageOverlay = L.imageOverlay('mapa-orientacao.png', [
+        [cornerCoords.sw[0], cornerCoords.sw[1]],
+        [cornerCoords.ne[0], cornerCoords.ne[1]]
     ], {
         opacity: 0.5,
         interactive: false
     }).addTo(map);
 
-    // 📍 Marcadores nos cantos
+    // Marcadores nos cantos
     L.marker(cornerCoords.nw).addTo(map).bindPopup("Noroeste");
     L.marker(cornerCoords.ne).addTo(map).bindPopup("Nordeste");
     L.marker(cornerCoords.se).addTo(map).bindPopup("Sudeste");
@@ -46,6 +46,18 @@ function initMap() {
             .setLatLng(e.latlng)
             .setContent(`📍 Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`)
             .openOn(map);
+    });
+
+    // 🎚️ Controles de opacidade
+    const mapSlider = document.getElementById('mapOpacity');
+    const imageSlider = document.getElementById('imageOpacity');
+
+    mapSlider.addEventListener('input', () => {
+        tileLayer.setOpacity(parseFloat(mapSlider.value));
+    });
+
+    imageSlider.addEventListener('input', () => {
+        imageOverlay.setOpacity(parseFloat(imageSlider.value));
     });
 
     return map;
